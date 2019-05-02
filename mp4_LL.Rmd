@@ -1,0 +1,77 @@
+---
+title: "mp4_LL"
+author: "Lauren Low"
+date: "5/1/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(RMySQL)
+db <- dbConnect(MySQL(), 
+                host = "scidb.smith.edu", 
+                user = "mth292", 
+                password = "RememberPi", 
+                dbname = "imdb")
+knitr::opts_chunk$set(connection = db, max.print = 20)
+```
+
+
+```{sql, connection = db}
+SHOW TABLES
+FROM imdb;
+```
+
+```{sql, connection = db}
+DESCRIBE aka_title
+```
+
+```{sql, connection = db}
+SELECT *
+FROM info_type
+```
+
+```{sql, connection = db}
+SELECT *
+FROM movie_info_idx
+```
+
+```{sql, connection = db}
+SELECT *
+FROM company_name
+```
+
+```{sql, connection = db}
+SELECT aka_title.id, aka_title.title, aka_title.production_year, movie_info.movie_id, movie_info.info_type_id, movie_info.info
+FROM aka_title
+JOIN movie_info ON aka_title.id = movie_info.movie_id
+WHERE info_type_id = 107
+
+```
+
+```{sql, connection = db}
+SELECT aka_title.id, aka_title.title, aka_title.production_year, company_name.id, company_name.name AS company_name
+FROM aka_title
+JOIN company_name ON aka_title.id = company_name.id
+WHERE aka_title.title LIKE '%star_trek%'
+```
+
+```{sql, connection = db}
+SELECT DISTINCT ml.movie_id, ml.link_type_id, title.title, title.id, title.kind_id, title.production_year
+FROM imdb.movie_link AS ml
+JOIN title ON title.id = ml.movie_id
+WHERE (title LIKE 'Spider-man%' 
+OR title LIKE '%Star Wars: Episode%'
+OR title LIKE 'Jurassic%'
+OR title LIKE 'Ghostbusters%'
+OR title LIKE '%Planet of the Apes%'
+OR title LIKE '%King Kong%')
+AND (link_type_id = 3
+OR link_type_id = 4
+OR link_type_id = 2)
+AND kind_id = 1
+```
