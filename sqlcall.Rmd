@@ -27,7 +27,7 @@ movies <- db %>%
 FROM imdb.title
 JOIN movie_info_idx AS mii ON mii.movie_id = title.id
 JOIN movie_info AS mi ON mi.movie_id = title.id
-WHERE (title LIKE 'Spider-man%' 
+WHERE (title LIKE '%Spider-man%' 
 OR title LIKE '%Star Wars: Episode%'
 OR title LIKE 'Jurassic%'
 OR title LIKE 'Ghostbusters%'
@@ -51,3 +51,99 @@ movies_final <- movies %>%
   filter(title != "Jurassic Park: Prime Survival" & title != "Spider-man Revenge" & title != "Star Wars: Episode III.VIII: Rise of the Troopers" & title != "Ghostbusters SLC" & title != "Jurassic Park: Prime Survival" & title != "Jurassic City" & title != "Spider-Man Lives: A Miles Morales Story" & title != "Spider-Man: The Lost Avenger")
 ```
 
+```{r}
+Spiderman <- db %>%
+  dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
+FROM imdb.title
+JOIN movie_info_idx AS mii ON mii.movie_id = title.id
+JOIN movie_info AS mi ON mi.movie_id = title.id
+WHERE title LIKE '%Spider-man%'
+AND kind_id = 1
+AND mii.info_type_id = 101
+AND mi.info_type_id = 105;") %>%
+   select(id, title, production_year, Rating, Budget) %>%
+  filter(title != "Spider-man Revenge" & title != "Spider-Man Lives: A Miles Morales Story" & title != "Spider-Man: The Lost Avenger" & production_year != 2015)
+
+```
+
+```{r}
+Star_wars <- db %>%
+  dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
+FROM imdb.title
+JOIN movie_info_idx AS mii ON mii.movie_id = title.id
+JOIN movie_info AS mi ON mi.movie_id = title.id
+WHERE (title LIKE '%Star Wars: Episode%'
+OR title = 'Star Wars: The Last Jedi'
+OR title = 'Star Wars')
+AND kind_id = 1
+AND mii.info_type_id = 101
+AND mi.info_type_id = 105;") %>%
+  select(id, title, production_year, Rating, Budget) %>%
+  filter(title != "Star Wars: Episode III.VIII: Rise of the Troopers")
+```
+
+```{r}
+Jurassic <- db %>%
+  dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
+FROM imdb.title
+JOIN movie_info_idx AS mii ON mii.movie_id = title.id
+JOIN movie_info AS mi ON mi.movie_id = title.id
+WHERE (title LIKE 'Jurassic%'
+OR title = 'The Lost World: Jurassic Park'
+OR title = 'Jurassic World: Fallen Kingdom')
+AND kind_id = 1
+AND mii.info_type_id = 101
+AND mi.info_type_id = 105;")%>%
+  select(id, title, production_year, Rating, Budget) %>%
+  filter(title != "Jurassic Park: Prime Survival" & title != "Jurassic City")
+```
+
+
+```{r}
+ghostbusters <- db %>%
+  dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
+FROM imdb.title
+JOIN movie_info_idx AS mii ON mii.movie_id = title.id
+JOIN movie_info AS mi ON mi.movie_id = title.id
+WHERE title LIKE 'Ghostbusters%'
+AND kind_id = 1
+AND mii.info_type_id = 101
+AND mi.info_type_id = 105;") %>%
+  select(id, title, production_year, Rating, Budget) %>%
+  filter(title != "Ghostbusters SLC")
+```
+
+
+```{r}
+apes <- db %>%
+  dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
+FROM imdb.title
+JOIN movie_info_idx AS mii ON mii.movie_id = title.id
+JOIN movie_info AS mi ON mi.movie_id = title.id
+WHERE title LIKE '%Planet of the Apes%'
+AND kind_id = 1
+AND mii.info_type_id = 101
+AND mi.info_type_id = 105;") %>%
+  select(id, title, production_year, Rating, Budget) 
+```
+
+
+```{r}
+batman <- db %>%
+  dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
+FROM imdb.title
+JOIN movie_info_idx AS mii ON mii.movie_id = title.id
+JOIN movie_info AS mi ON mi.movie_id = title.id
+WHERE (title = 'Batman'
+OR title = 'Batman Returns'
+OR title = 'Batman Forever'
+OR title = 'Batman & Robin'
+OR title = 'Batman Begins'
+OR title = 'The Dark Knight'
+OR title = 'The Dark Knight Rises')
+AND kind_id = 1
+AND mii.info_type_id = 101
+AND mi.info_type_id = 105;") %>%
+  select(id, title, production_year, Rating, Budget) %>%
+  filter(id != 4339101)
+```
