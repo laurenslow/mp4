@@ -76,8 +76,9 @@ OR link_type_id = 2)
 AND kind_id = 1
 ```
 
-```{sql, connection = db}
-SELECT DISTINCT ml.movie_id, ml.link_type_id, title.title, title.id, title.kind_id, title.production_year, mii.movie_id, mii.info_type_id, mii.info, mi.info_type_id, mi.info
+```{r}
+movies <- db %>%
+  dbGetQuery("SELECT DISTINCT ml.movie_id, ml.link_type_id, title.title, title.id, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
 FROM imdb.movie_link AS ml
 JOIN title ON title.id = ml.movie_id
 JOIN movie_info_idx AS mii ON mii.movie_id = ml.movie_id
@@ -95,7 +96,11 @@ OR link_type_id = 4
 OR link_type_id = 2)
 AND kind_id = 1
 AND mii.info_type_id = 101
-AND mi.info_type_id = 107;
+AND mi.info_type_id = 105;")
 ```
 
+```{r}
+movies_final <- movies %>%
+  select(movie_id, title, production_year, Rating, Budget)
+```
 
