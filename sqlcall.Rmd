@@ -1,0 +1,53 @@
+---
+title: "mp4_LL"
+author: "Lauren Low"
+date: "5/1/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(RMySQL)
+library(dplyr)
+db <- dbConnect(MySQL(), 
+                host = "scidb.smith.edu", 
+                user = "mth292", 
+                password = "RememberPi", 
+                dbname = "imdb")
+knitr::opts_chunk$set(connection = db, max.print = 20)
+```
+
+```{r}
+movies <- db %>%
+  dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
+FROM imdb.title
+JOIN movie_info_idx AS mii ON mii.movie_id = title.id
+JOIN movie_info AS mi ON mi.movie_id = title.id
+WHERE (title LIKE 'Spider-man%' 
+OR title LIKE '%Star Wars: Episode%'
+OR title LIKE 'Jurassic%'
+OR title LIKE 'Ghostbusters%'
+OR title LIKE '%Planet of the Apes%'
+OR title = 'Batman'
+OR title = 'Batman Returns'
+OR title = 'Batman Forever'
+OR title = 'Batman & Robin'
+OR title = 'Batman Begins'
+OR title = 'The Dark Knight'
+OR title = 'The Dark Knight Rises')
+AND kind_id = 1
+AND mii.info_type_id = 101
+AND mi.info_type_id = 105;")
+
+```
+
+```{r}
+movies_final <- movies %>%
+  select(id, title, production_year, Rating, Budget) %>%
+  filter(title != "Jurassic Park: Prime Survival" & title != "Spider-man Revenge" & title != "Star Wars: Episode III.VIII: Rise of the Troopers" & title != "Ghostbusters SLC" & title != "Jurassic Park: Prime Survival" & title != "Jurassic City" & title != "Spider-Man Lives: A Miles Morales Story" & title != "Spider-Man: The Lost Avenger")
+```
+
