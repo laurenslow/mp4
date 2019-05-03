@@ -75,3 +75,27 @@ OR link_type_id = 4
 OR link_type_id = 2)
 AND kind_id = 1
 ```
+
+```{sql, connection = db}
+SELECT DISTINCT ml.movie_id, ml.link_type_id, title.title, title.id, title.kind_id, title.production_year, mii.movie_id, mii.info_type_id, mii.info, mi.info_type_id, mi.info
+FROM imdb.movie_link AS ml
+JOIN title ON title.id = ml.movie_id
+JOIN movie_info_idx AS mii ON mii.movie_id = ml.movie_id
+JOIN movie_info AS mi ON mi.movie_id = ml.movie_id
+WHERE (title LIKE 'Spider-man%' 
+OR title LIKE '%Star Wars: Episode%'
+OR title LIKE 'Jurassic%'
+OR title LIKE 'Ghostbusters'
+OR title LIKE '%Planet of the Apes%'
+OR title LIKE 'Batman%'
+OR title = 'The Dark Knight'
+OR title = 'The Dark Knight Rises')
+AND (link_type_id = 3
+OR link_type_id = 4
+OR link_type_id = 2)
+AND kind_id = 1
+AND mii.info_type_id = 101
+AND mi.info_type_id = 107;
+```
+
+
