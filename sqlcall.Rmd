@@ -1,15 +1,17 @@
 ---
-title: "mp4_LL"
-author: "Lauren Low"
+title: Mini-Project 4
+author: Lauren Low, Lucy Hall
 date: "5/1/2019"
-output: html_document
+output: 
+  html_document:
+      code_folding: hide
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(ggplot2)
 library(RMySQL)
@@ -22,37 +24,7 @@ db <- dbConnect(MySQL(),
 knitr::opts_chunk$set(connection = db, max.print = 20)
 ```
 
-```{r}
-movies <- db %>%
-  dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
-FROM imdb.title
-JOIN movie_info_idx AS mii ON mii.movie_id = title.id
-JOIN movie_info AS mi ON mi.movie_id = title.id
-WHERE (title LIKE '%Spider-man%' 
-OR title LIKE '%Star Wars: Episode%'
-OR title LIKE 'Jurassic%'
-OR title LIKE 'Ghostbusters%'
-OR title LIKE '%Planet of the Apes%'
-OR title = 'Batman'
-OR title = 'Batman Returns'
-OR title = 'Batman Forever'
-OR title = 'Batman & Robin'
-OR title = 'Batman Begins'
-OR title = 'The Dark Knight'
-OR title = 'The Dark Knight Rises')
-AND kind_id = 1
-AND mii.info_type_id = 101
-AND mi.info_type_id = 105;")
-
-```
-
-```{r}
-movies_final <- movies %>%
-  select(id, title, production_year, Rating, Budget) %>%
-  filter(title != "Jurassic Park: Prime Survival" & title != "Spider-man Revenge" & title != "Star Wars: Episode III.VIII: Rise of the Troopers" & title != "Ghostbusters SLC" & title != "Jurassic Park: Prime Survival" & title != "Jurassic City" & title != "Spider-Man Lives: A Miles Morales Story" & title != "Spider-Man: The Lost Avenger")
-```
-
-```{r}
+```{r, message = FALSE, warning = FALSE}
 Spiderman <- db %>%
   dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
 FROM imdb.title
@@ -67,7 +39,7 @@ AND mi.info_type_id = 105;") %>%
 
 ```
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 Star_wars <- db %>%
   dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
 FROM imdb.title
@@ -83,7 +55,7 @@ AND mi.info_type_id = 105;") %>%
   filter(title != "Star Wars: Episode III.VIII: Rise of the Troopers")
 ```
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 Jurassic <- db %>%
   dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
 FROM imdb.title
@@ -100,7 +72,7 @@ AND mi.info_type_id = 105;")%>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 ghostbusters <- db %>%
   dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
 FROM imdb.title
@@ -115,7 +87,7 @@ AND mi.info_type_id = 105;") %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 apes <- db %>%
   dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
 FROM imdb.title
@@ -129,7 +101,7 @@ AND mi.info_type_id = 105;") %>%
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 batman <- db %>%
   dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
 FROM imdb.title
@@ -149,32 +121,35 @@ AND mi.info_type_id = 105;") %>%
   filter(id != 4339101)
 ```
 
-```{r}
-ggplot(apes, aes(x = production_year, y = Rating, color = title, size = Budget))+
-  geom_point()
+```{r, message = FALSE, warning = FALSE}
+mad_max <- db %>% dbGetQuery("SELECT DISTINCT title.id, title.title, title.kind_id, title.production_year, mii.movie_id AS movie_id2, mii.info_type_id, mii.info AS Rating, mi.info_type_id AS info_type_id2, mi.info AS Budget
+FROM imdb.title
+JOIN movie_info_idx AS mii ON mii.movie_id = title.id
+JOIN movie_info AS mi ON mi.movie_id = title.id
+WHERE title LIKE '%Mad Max%'
+AND kind_id = 1
+AND mii.info_type_id = 101
+AND mi.info_type_id = 105;") %>%
+  select(id, title, production_year, Rating, Budget) %>%
+  filter(production_year != 2010, production_year != 2011, id != 3915208)
 ```
 
-```{r}
-ggplot(batman, aes(x = production_year, y = Rating, color = title, size = Budget))+
-  geom_point()
+```{r, message = FALSE, warning = FALSE}
+plot_movie <- function(table_name, title_official) {
+  
+    ggplot(table_name, aes(x = production_year, y = Rating, color = title, size = Budget))+
+  geom_point() +
+    labs(title = title_official, x = "Production Year", y = "IMDb Rating", caption = "All data from the Internet Movie Database")
+}
 ```
 
-```{r}
-ggplot(ghostbusters, aes(x = production_year, y = Rating, color = title, size = Budget))+
-  geom_point()
+```{r, message = FALSE, warning = FALSE}
+plot_movie(apes, "Planet of the Apes Franchise")
+plot_movie(batman, "Batman Franchise")
+plot_movie(ghostbusters, "Ghostbusters Franchise")
+plot_movie(Jurassic, "Jurassic Park Franchise")
+plot_movie(Spiderman, "Spider-man Franchise")
+plot_movie(Star_wars, "Star Wars Franchise")
+plot_movie(mad_max, "Mad Max Franchise")
 ```
 
-```{r}
-ggplot(Jurassic, aes(x = production_year, y = Rating, color = title, size = Budget))+
-  geom_point()
-```
-
-```{r}
-ggplot(Spiderman, aes(x = production_year, y = Rating, color = title, size = Budget))+
-  geom_point()
-```
-
-```{r}
-ggplot(Star_wars, aes(x = production_year, y = Rating, color = title, size = Budget))+
-  geom_point()
-```
